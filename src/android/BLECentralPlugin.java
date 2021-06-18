@@ -760,18 +760,20 @@ public class BLECentralPlugin extends CordovaPlugin {
 
         discoverCallback = callbackContext;
         bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
+
+        List<ScanFilter> filters = new ArrayList<ScanFilter>();
+        ScanSettings settings = new ScanSettings.Builder()
+            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+            .build();
+
         if (serviceUUIDs != null && serviceUUIDs.length > 0) {
-            List<ScanFilter> filters = new ArrayList<ScanFilter>();
             for (UUID uuid : serviceUUIDs) {
-                ScanFilter filter = new ScanFilter.Builder().setServiceUuid(
-                        new ParcelUuid(uuid)).build();
+                ScanFilter filter = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(uuid)).build();
                 filters.add(filter);
             }
-            ScanSettings settings = new ScanSettings.Builder().build();
-            bluetoothLeScanner.startScan(filters, settings, leScanCallback);
-        } else {
-            bluetoothLeScanner.startScan(leScanCallback);
         }
+        bluetoothLeScanner.startScan(filters, settings, leScanCallback);
 
         if (scanSeconds > 0) {
             Handler handler = new Handler();
@@ -877,5 +879,4 @@ public class BLECentralPlugin extends CordovaPlugin {
     private void resetScanOptions() {
         this.reportDuplicates = false;
     }
-
 }
